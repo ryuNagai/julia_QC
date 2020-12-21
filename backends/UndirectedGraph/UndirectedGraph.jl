@@ -28,8 +28,11 @@ module UndirectedGraphBackend
         _gates =[]
         for gate in gates
             parsed_gates = gate_parser(gate)
-            _gates = vcat(_gates, parsed_gates)
+            for _gate in parsed_gates
+                push!(_gates, _gate)
+            end
         end
+        _gates = convert(Array{Gate,1}, _gates)
         if model.measure_all
             input_state = zeros(Int, n_qregs)
             output_state = zeros(Int, n_qregs)
