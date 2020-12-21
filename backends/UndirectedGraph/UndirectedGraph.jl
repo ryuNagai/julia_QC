@@ -27,8 +27,8 @@ module UndirectedGraphBackend
     function execute_backend(n_qregs::Int, gates::Array{Gate,1}, model::UndirectedGraphModel)
         _gates =[]
         for gate in gates
-            parsed_gates = gate_perser(gate)
-            vcat(_gates, parsed_gates)
+            parsed_gates = gate_parser(gate)
+            _gates = vcat(_gates, parsed_gates)
         end
         if model.measure_all
             input_state = zeros(Int, n_qregs)

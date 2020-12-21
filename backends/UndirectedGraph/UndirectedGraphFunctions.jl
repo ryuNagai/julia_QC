@@ -5,7 +5,7 @@ module UndirectedGraphFunctions
     using Reexport
     @reexport using .GateSet
     @reexport using .BaseModule
-    export create_buckets, contract_graph
+    export create_buckets, contract_graph, gate_parser
 
     module UndirectedGraphGates
         export UndirectedGraphGate, OneQubitGateTensor, TwoQubitGateTensor, StateTensor
@@ -205,7 +205,7 @@ module UndirectedGraphFunctions
         return [exp(-im*theta/2) 0; 0 exp(im*theta/2)]
     end
 
-    function gate_perser(gate::CX)
+    function gate_parser(gate::CX)
         parsed_gates = []
         push!(parsed_gates, H(gate._target))
         push!(parsed_gates, CZ(gate._control, gate._target))
@@ -213,7 +213,7 @@ module UndirectedGraphFunctions
         return parsed_gates
     end
 
-    function gate_perser(gate::T) where T <: Gate
+    function gate_parser(gate::T) where T <: Gate
         return [gate]
     end
 
