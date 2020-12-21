@@ -132,7 +132,6 @@ module UndirectedGraphFunctions
         reshapeB = Tuple(_indB .+ 1)
         expandA = Tuple((_indA .- 1) .* -1 .+ 1)
         expandB = Tuple((_indB .- 1) .* -1 .+ 1)
-        #println(A, B)
         _A = repeat(reshape(A.item, reshapeA), outer=expandA)
         _B = repeat(reshape(B.item, reshapeB), outer=expandB)
         return Tensor(indOut, _A .* _B)
@@ -153,7 +152,6 @@ module UndirectedGraphFunctions
         for bucket in buckets
             if length(bucket) > 0
                 tensor = process_bucket(bucket)
-                #println(bucket)
                 if max(size(tensor.item)...) > 1
                     first_index = tensor.indices[1]
                     to_bucket = buckets[first_index]
@@ -175,7 +173,7 @@ module UndirectedGraphFunctions
     end
 
     function gate_mat(gate::Y)
-        return [0 -im; im 0]
+        return [0 im; -im 0]
     end
 
     function gate_mat(gate::Z)
@@ -197,7 +195,7 @@ module UndirectedGraphFunctions
 
     function gate_mat(gate::RY)
         theta = gate._theta
-        return [cos(theta/2) -sin(theta/2); sin(theta/2) cos(theta/2)]
+        return [cos(theta/2) sin(theta/2); -sin(theta/2) cos(theta/2)]
     end
 
     function gate_mat(gate::RZ)
