@@ -191,17 +191,17 @@ module UndirectedGraphFunctions
     end
 
     function gate_mat(gate::RX)
-        theta = RX._theta
+        theta = gate._theta
         return [cos(theta/2) -im*sin(theta/2); -im*sin(theta/2) cos(theta/2)]
     end
 
     function gate_mat(gate::RY)
-        theta = RX._theta
+        theta = gate._theta
         return [cos(theta/2) -sin(theta/2); sin(theta/2) cos(theta/2)]
     end
 
     function gate_mat(gate::RZ)
-        theta = RX._theta
+        theta = gate._theta
         return [exp(-im*theta/2) 0; 0 exp(im*theta/2)]
     end
 

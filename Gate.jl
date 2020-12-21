@@ -49,7 +49,6 @@ module GateSet
 
     # export all OneQubit Gate and TwoQubitGate
     for n in names(@__MODULE__; all=true)
-        #println(@eval $n <: Gate)
         if Base.isidentifier(n) && n ∉ (Symbol(@__MODULE__), :eval, :include)
             if @eval typeof($n) <: DataType
                 if @eval $n <: Gate
