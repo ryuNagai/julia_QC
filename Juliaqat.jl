@@ -57,6 +57,17 @@ module Juliaqat
         return circuit
     end
 
+    function apply!(circuit::QuantumCircuit, gates::Array{Any,1})
+        for gate in gates
+            if typeof(gate) <: Gate
+                push!(circuit._gates, gate)
+            else
+                error("Incorrect gates.")
+            end
+        end
+        return circuit
+    end
+
     function apply!(circuit::Input, gate::Gate)
         push!(circuit._gates, gate)
         return circuit
@@ -65,6 +76,17 @@ module Juliaqat
     function apply!(circuit::Input, gates::Array{T,1}) where T <: Gate
         for gate in gates
             push!(circuit._gates, gate)
+        end
+        return circuit
+    end
+
+    function apply!(circuit::Input, gates::Array{Any,1})
+        for gate in gates
+            if typeof(gate) <: Gate
+                push!(circuit._gates, gate)
+            else
+                error("Incorrect gates.")
+            end
         end
         return circuit
     end
