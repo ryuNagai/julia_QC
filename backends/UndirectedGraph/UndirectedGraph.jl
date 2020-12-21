@@ -25,11 +25,16 @@ module UndirectedGraphBackend
 
 
     function execute_backend(n_qregs::Int, gates::Array{Gate,1}, model::UndirectedGraphModel)
+        _gates =[]
+        for gate in gates
+            parsed_gates = gate_perser(gate)
+            vcat(_gates, parsed_gates)
+        end
         if model.measure_all
             input_state = zeros(Int, n_qregs)
             output_state = zeros(Int, n_qregs)
             state_vec = []
-            buckets = create_buckets(n_qregs, gates, input_state, output_state)
+            buckets = create_buckets(n_qregs, _gates, input_state, output_state)
             result = contract_graph(buckets)
             push!(state_vec, result)
             while true
@@ -40,7 +45,7 @@ module UndirectedGraphBackend
                         break
                     end
                 end
-                buckets = create_buckets(n_qregs, gates, input_state, output_state)
+                buckets = create_buckets(n_qregs, _gates, input_state, output_state)
                 result = contract_graph(buckets)
                 push!(state_vec, result)
                 if sum(output_state) >= n_qregs
@@ -54,7 +59,7 @@ module UndirectedGraphBackend
             end
             input_state = zeros(Int, n_qregs)
             output_state = model.output_basis
-            buckets = create_buckets(n_qregs, gates, input_state, output_state)
+            buckets = create_buckets(n_qregs, _gates, input_state, output_state)
             result = contract_graph(buckets)
             return result
         end

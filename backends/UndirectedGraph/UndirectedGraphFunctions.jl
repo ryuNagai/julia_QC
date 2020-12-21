@@ -44,7 +44,7 @@ module UndirectedGraphFunctions
         worldlines = ones(Int64, _n_qregs)
         elements = []
         for i in 1:length(gates)
-            obj, worldlines = get_gateobj(gates[i], worldlines)
+            obj, worldlines = get_tensor(gates[i], worldlines)
             push!(elements, obj)
         end
 
@@ -81,7 +81,7 @@ module UndirectedGraphFunctions
         return buckets        
     end
 
-    function get_gateobj(gate::T, worldlines::Array{Int, 1}) where T <: OneQubitGate
+    function get_tensor(gate::T, worldlines::Array{Int, 1}) where T <: OneQubitGate
         mat = gate_mat(gate)
         worldline = worldlines[gate._target]
         obj = OneQubitGateTensor(mat, gate._target, worldline, worldline + 1)
@@ -89,7 +89,7 @@ module UndirectedGraphFunctions
         return obj, worldlines
     end
 
-    function get_gateobj(gate::T, worldlines::Array{Int, 1}) where T <: TwoQubitGate
+    function get_tensor(gate::T, worldlines::Array{Int, 1}) where T <: TwoQubitGate
         mat = gate_mat(gate)
         target1 = min(gate._control, gate._target)
         target2 = max(gate._control, gate._target)
@@ -203,6 +203,18 @@ module UndirectedGraphFunctions
     function gate_mat(gate::RZ)
         theta = RX._theta
         return [exp(-im*theta/2) 0; 0 exp(im*theta/2)]
+    end
+
+    function gate_perser(gate::CX)
+        parsed_gates = []
+        push!(parsed_gates, H(gate._target))
+        push!(parsed_gates, CZ(gate._control, gate._target))
+        push!(parsed_gates, H(gate._target))
+        return parsed_gates
+    end
+
+    function gate_perser(gate::T) where T <: Gate
+        return [gate]
     end
 
 end
