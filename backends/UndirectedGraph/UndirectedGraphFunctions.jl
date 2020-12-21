@@ -184,6 +184,14 @@ module UndirectedGraphFunctions
         return 1 / sqrt(2) * [1 1; 1 -1]
     end
 
+    function gate_mat(gate::S)
+        return [1 0; 0 exp(im*pi/2)]
+    end
+
+    function gate_mat(gate::T)
+        return [1 0; 0 exp(im*pi/4)]
+    end
+
     function gate_mat(gate::CZ)
         return [1 1; 1 -1]
     end

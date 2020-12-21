@@ -18,6 +18,18 @@ module GateSet
         _target::Int64
     end
 
+    struct H <: OneQubitGate
+        _target::Int64
+    end
+
+    struct T <: OneQubitGate
+        _target::Int64
+    end
+
+    struct S <: OneQubitGate
+        _target::Int64
+    end
+
     struct RX <: OneQubitGate
         _target::Int64
         _theta::Float64
@@ -31,10 +43,6 @@ module GateSet
     struct RZ <: OneQubitGate
         _target::Int64
         _theta::Float64
-    end
-
-    struct H <: OneQubitGate
-        _target::Int64
     end
 
     struct CX <: TwoQubitGate
