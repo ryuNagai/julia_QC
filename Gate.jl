@@ -45,6 +45,13 @@ module GateSet
         _theta::Float64
     end
 
+    struct U3 <: OneQubitGate
+        _target::Int64
+        _theta::Float64
+        _phi::Float64
+        _lambd::Float64
+    end
+
     struct CX <: TwoQubitGate
         _control::Int64
         _target::Int64
@@ -53,6 +60,29 @@ module GateSet
     struct CZ <: TwoQubitGate
         _control::Int64
         _target::Int64
+    end
+
+    struct CP <: TwoQubitGate
+        _control::Int64
+        _target::Int64
+    end
+
+    struct CRX <: TwoQubitGate
+        _control::Int64
+        _target::Int64
+        _theta::Float64
+    end
+
+    struct CRY <: TwoQubitGate
+        _control::Int64
+        _target::Int64
+        _theta::Float64
+    end
+
+    struct CRZ <: TwoQubitGate
+        _control::Int64
+        _target::Int64
+        _theta::Float64
     end
 
     # export all OneQubit Gate and TwoQubitGate

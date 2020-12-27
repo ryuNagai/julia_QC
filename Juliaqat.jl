@@ -1,14 +1,19 @@
 module Juliaqat
 
-    #include("./Gate.jl")
+    include("./Gate.jl")
     include("./backends/UndirectedGraph/UndirectedGraph.jl")
+    include("./backends/StateVector/StateVector.jl")
     using Reexport
     #@reexport using .GateSet
+    # using .GateSet
+    #     :Gate
     @reexport using .UndirectedGraphBackend
+    #@reexport using .StateVectorBackend
 
     export QuantumCircuit, Input, apply!, get_device, execute
 
     devices = Dict([("UndirectedGraph", UndirectedGraphModel),
+                    #("StateVector", StateVectorModel)
                         ])
 
     mutable struct QuantumCircuit
