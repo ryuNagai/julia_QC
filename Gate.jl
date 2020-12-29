@@ -1,5 +1,5 @@
 module GateSet
-    export Gate#, OneQubitGate, TwoQubitGate
+    export Gate
 
     abstract type Gate end
     abstract type OneQubitGate <: Gate end

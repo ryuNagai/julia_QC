@@ -4,8 +4,8 @@ module BackendFunctions
     include("./backend_Models.jl")
     include("../Gate.jl")
 
-    using .UndirectedGraphBackend
-    using .StateVectorBackend
+    import .UndirectedGraphBackend
+    import .StateVectorBackend
     using Reexport
     @reexport using .GateSet
     @reexport using .BackendModels

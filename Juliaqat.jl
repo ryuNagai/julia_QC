@@ -1,11 +1,9 @@
 module Juliaqat
 
-    #include("./Gate.jl")
-    #include("./BaseModules.jl")
     include("./backends/backend_functions.jl")
     using Reexport
     @reexport using .BackendFunctions
-
+    
     export QuantumCircuit, Input, apply!, get_device, execute
 
     devices = Dict([("UndirectedGraph", UndirectedGraphModel),
