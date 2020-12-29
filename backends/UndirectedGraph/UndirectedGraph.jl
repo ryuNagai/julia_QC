@@ -1,38 +1,15 @@
 module UndirectedGraphBackend
 
     include("./UndirectedGraphFunctions.jl")
-    export UndirectedGraphModel, execute_backend
-    using Reexport
-    @reexport using .UndirectedGraphFunctions
+    include("../backend_Models.jl")
+    export execute_backend
+    using .UndirectedGraphFunctions
+    using .BackendModels
 
-    struct UndirectedGraphModel <: Device
-        measure_all::Bool
-        output_basis::Array{Int, 1}
-    end
-
-    function UndirectedGraphModel(x)
-        if length(x) == 0
-            return UndirectedGraphModel(true, [1])
-        elseif typeof(x[1]) <: Array{Int, 1}
-            for i in x[1]
-                if i != 0 && i != 1
-                    error("Measured state must be computational basis.")
-                end
-            end
-            return UndirectedGraphModel(false, x[1])
-        end
-    end
-
-
-    function execute_backend(n_qregs::Int, gates::Array{Gate,1}, model::UndirectedGraphModel)
-        _gates =[]
-        for gate in gates
-            parsed_gates = gate_parser(gate)
-            for _gate in parsed_gates
-                push!(_gates, _gate)
-            end
-        end
-        _gates = convert(Array{Gate,1}, _gates)
+    function execute_backend(n_qregs::Int, gates, model)
+        backend_gates = call_backend_gates(gates)
+        parsed_gates = parse_gates(backend_gates)
+        _gates = convert(Array{UG_Gate,1}, parsed_gates)
         if model.measure_all
             input_state = zeros(Int, n_qregs)
             output_state = zeros(Int, n_qregs)
@@ -67,6 +44,39 @@ module UndirectedGraphBackend
             return result
         end
         
+    end
+
+    function call_backend_gates(gates)
+        backend_gates = []
+        for gate in gates
+            name = gate._name
+            fields = fieldnames(typeof(gate))
+            field_names = []
+            for i in fields
+                push!(field_names, string(i))
+            end
+            given_property = [getproperty(gate, property) for property in fields]
+            code = gate._name * "("
+            for prop in given_property[1:end-1]
+                code *= string(prop)
+                code *= ", "
+            end
+            code *= ")"
+            new_gate = eval(Meta.parse(code))
+            push!(backend_gates, new_gate)
+        end
+        return backend_gates
+    end
+
+    function parse_gates(backend_gates)
+        parsed_gates =[]
+        for gate in backend_gates
+            _gates = gate_parser(gate)
+            for _gate in _gates
+                push!(parsed_gates, _gate)
+            end
+        end
+        return parsed_gates
     end
     
 

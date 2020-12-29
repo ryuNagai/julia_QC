@@ -1,46 +1,21 @@
 module UndirectedGraphFunctions
-    include("../../BaseModules.jl")
-    include("../../Gate.jl")
-    
+    include("./UndirectedGraphGates.jl")
     using Reexport
-    @reexport using .GateSet
-    @reexport using .BaseModule
+    @reexport using .UndirectedGraphGates
     export create_buckets, contract_graph, gate_parser
 
-    module UndirectedGraphGates
-        export UndirectedGraphGate, OneQubitGateTensor, TwoQubitGateTensor, StateTensor
-        abstract type UndirectedGraphGate end
-
-        mutable struct OneQubitGateTensor <: UndirectedGraphGate
-            item::Array{Complex, 2}
-            target::Int
-            worldline1::Int
-            worldline2::Int
-        end
-
-        mutable struct TwoQubitGateTensor <: UndirectedGraphGate
-            item::Array{Complex, 2}
-            control::Int
-            target::Int
-            worldline1::Int
-            worldline2::Int
-        end
-
-        mutable struct StateTensor
-            item::Array{Complex, 1}
-            target::Int
-            worldline1::Int
-        end
+    mutable struct StateTensor
+        item::Array{Complex, 1}
+        target::Int
+        worldline1::Int
     end
-
-    using .UndirectedGraphGates
-
+    
     struct Tensor
         indices::Array{Int, 1}
         item::Array{Complex}
     end
 
-    function create_buckets(_n_qregs::Int, gates::Array{Gate,1}, input_state::Array{Int,1}, output_state::Array{Int,1})
+    function create_buckets(_n_qregs::Int, gates::Array{UG_Gate,1}, input_state::Array{Int,1}, output_state::Array{Int,1})
         worldlines = ones(Int64, _n_qregs)
         elements = []
         for i in 1:length(gates)
@@ -81,7 +56,7 @@ module UndirectedGraphFunctions
         return buckets        
     end
 
-    function get_tensor(gate::T, worldlines::Array{Int, 1}) where T <: OneQubitGate
+    function get_tensor(gate::T, worldlines::Array{Int, 1}) where T <: UG_OneQubitGate
         mat = gate_mat(gate)
         worldline = worldlines[gate._target]
         obj = OneQubitGateTensor(mat, gate._target, worldline, worldline + 1)
@@ -89,7 +64,7 @@ module UndirectedGraphFunctions
         return obj, worldlines
     end
 
-    function get_tensor(gate::T, worldlines::Array{Int, 1}) where T <: TwoQubitGate
+    function get_tensor(gate::T, worldlines::Array{Int, 1}) where T <: UG_TwoQubitGate
         mat = gate_mat(gate)
         target1 = min(gate._control, gate._target)
         target2 = max(gate._control, gate._target)
@@ -99,7 +74,7 @@ module UndirectedGraphFunctions
         return obj, worldlines
     end
 
-    function make_tensor(arr::T) where T <: UndirectedGraphGate
+    function make_tensor(arr::T) where T <: UndirectedGraphTensor
         index1 = arr.worldline1
         index2 = arr.worldline2
         A = Tensor([index1, index2], arr.item)
@@ -221,7 +196,7 @@ module UndirectedGraphFunctions
         return parsed_gates
     end
 
-    function gate_parser(gate::T) where T <: Gate
+    function gate_parser(gate::T) where T <: UG_Gate
         return [gate]
     end
 

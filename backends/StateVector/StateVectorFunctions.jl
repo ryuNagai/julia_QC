@@ -1,10 +1,7 @@
 module StateVectorFunctions
-    include("../../BaseModules.jl")
-    include("../../Gate.jl")
-
+    include("./StateVectorGates.jl")
     using Reexport
-    @reexport using .GateSet
-    @reexport using .BaseModule
+    @reexport using .StateVectorGates
     export apply!
 
     """
@@ -56,7 +53,7 @@ module StateVectorFunctions
         target = n_qubits - gate._target
         sqrt2_inv = 1 / sqrt(2)#0.7071067811865475
         lower_mask = (1 << target) - 1
-        for i in prange(1 << (n_qubits - 1))
+        for i in 1:(1 << (n_qubits - 1))
             i0 = _shifted(lower_mask, i)
             t = qubits[i0]
             u = qubits[i0 + (1 << target)]
@@ -283,6 +280,13 @@ module StateVectorFunctions
             masks[i + 1] &= ~masks[i]
         end
         return masks
+    end
+
+    function _shifted(lower_mask, idx)
+        idx = idx - 1
+        lower = idx & lower_mask
+        higher = (idx & ~lower_mask) << 1
+        return higher + lower + 1
     end
     
     function _mult_shifted(masks, idx)

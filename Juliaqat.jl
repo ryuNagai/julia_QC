@@ -1,19 +1,15 @@
 module Juliaqat
 
-    include("./Gate.jl")
-    include("./backends/UndirectedGraph/UndirectedGraph.jl")
-    include("./backends/StateVector/StateVector.jl")
+    #include("./Gate.jl")
+    #include("./BaseModules.jl")
+    include("./backends/backend_functions.jl")
     using Reexport
-    #@reexport using .GateSet
-    # using .GateSet
-    #     :Gate
-    @reexport using .UndirectedGraphBackend
-    #@reexport using .StateVectorBackend
+    @reexport using .BackendFunctions
 
     export QuantumCircuit, Input, apply!, get_device, execute
 
     devices = Dict([("UndirectedGraph", UndirectedGraphModel),
-                    #("StateVector", StateVectorModel)
+                    ("StateVector", StateVectorModel)
                         ])
 
     mutable struct QuantumCircuit
@@ -97,12 +93,12 @@ module Juliaqat
     end
 
     function execute(circuit::QuantumCircuit, device::T) where T <: Device
-        result = execute_backend(circuit._n_qreg, circuit._gates, device)
+        result = execute_backend(circuit._n_qreg::Int, circuit._gates::Array{Gate,1}, device)
         return result
     end
 
     function execute(circuit::Input, device::T) where T <: Device
-        result = execute_backend(circuit._n_qreg, circuit._gates, device)
+        result = execute_backend(circuit._n_qreg::Int, circuit._gates::Array{Gate,1}, device)
         return result
     end
 

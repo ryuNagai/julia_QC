@@ -1,7 +1,3 @@
-module BaseModule
-
-    export Device
-
-    abstract type Device end
-
+module BaseModule    
+    
 end
