@@ -24,7 +24,7 @@ module BackendModels
 
     struct StateVectorModel <: Device
         zero_state::Bool
-        init_state::Array{Complex, 1}
+        init_state::Array{ComplexF64, 1}
     end
 
     function StateVectorModel(init_state)

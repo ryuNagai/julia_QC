@@ -8,7 +8,7 @@ module StateVectorBackend
 
     function execute_backend(n_qregs::Int, gates, model)
         if model.zero_state == true
-            state = zeros(Complex, 2^n_qregs)
+            state = zeros(ComplexF64, 2^n_qregs)
             state[1] = 1.
         else
             if length(model.init_state) != 2^n_qregs
@@ -19,7 +19,7 @@ module StateVectorBackend
         end
         backend_gates = call_backend_gates(gates)
         for gate in backend_gates
-            state = apply!(gate, state, n_qregs)
+            apply!(gate, state, n_qregs)
         end
         return state
     end

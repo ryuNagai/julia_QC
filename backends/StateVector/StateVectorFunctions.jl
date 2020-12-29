@@ -7,7 +7,7 @@ module StateVectorFunctions
     """
     X gate
     """
-    function apply!(gate::X, qubits::Array{Complex, 1}, n_qubits::Int)
+    function apply!(gate::X, qubits::Array{ComplexF64, 1}, n_qubits::Int)
         target = n_qubits - gate._target
         lower_mask = (1 << target) - 1
         for i in 1:(1 << (n_qubits - 1))
@@ -16,13 +16,13 @@ module StateVectorFunctions
             qubits[i0] = qubits[i0 + (1 << (target))]
             qubits[i0 + (1 << (target))] = t
         end
-        return qubits
+        #return qubits
     end
 
     """
     Y gate
     """
-    function apply!(gate::Y, qubits::Array{Complex, 1}, n_qubits::Int)
+    function apply!(gate::Y, qubits::Array{ComplexF64, 1}, n_qubits::Int)
         target = n_qubits - gate._target
         lower_mask = (1 << target) - 1
         for i in 1:(1 << (n_qubits - 1))
@@ -31,25 +31,25 @@ module StateVectorFunctions
             qubits[i0] = qubits[i0 + (1 << target)] * -1im
             qubits[i0 + (1 << target)] = t
         end
-        return qubits
+        #return qubits
     end
 
     """
     Z gate
     """
-    function apply!(gate::Z, qubits::Array{Complex, 1}, n_qubits::Int)
+    function apply!(gate::Z, qubits::Array{ComplexF64, 1}, n_qubits::Int)
         target = n_qubits - gate._target
         lower_mask = (1 << target) - 1
         for i in 1:(1 << (n_qubits - 1))
             qubits[_shifted(lower_mask, i) + (1 << target)] *= -1
         end
-        return qubits
+        #return qubits
     end
 
     """
     H gate
     """
-    function apply!(gate::H, qubits::Array{Complex, 1}, n_qubits::Int)
+    function apply!(gate::H, qubits::Array{ComplexF64, 1}, n_qubits::Int)
         target = n_qubits - gate._target
         sqrt2_inv = 1 / sqrt(2)#0.7071067811865475
         lower_mask = (1 << target) - 1
@@ -60,13 +60,44 @@ module StateVectorFunctions
             qubits[i0] = (t + u) * sqrt2_inv
             qubits[i0 + (1 << target)] = (t - u) * sqrt2_inv
         end
-        return qubits
+        #return qubits
+    end
+
+    function _diaggate(qubits::Array{ComplexF64, 1}, n_qubits::Int, target::Int, factor::ComplexF64)
+        lower_mask = (1 << target) - 1
+        for i in 1:(1 << (n_qubits - 1))
+            i1 = _shifted(lower_mask, i) + (1 << target)
+            qubits[i1] *= factor
+        end
+        #return qubits
+    end
+
+    """
+    S gate
+    """
+    function apply!(gate::S, qubits::Array{ComplexF64, 1}, n_qubits::Int)
+        target = gate._target
+        target = n_qubits - target
+        factor = 1im
+        _diaggate(qubits, n_qubits, target, factor)
+        #return qubits
+    end
+
+    """
+    T gate
+    """
+    function apply!(gate::T, qubits::Array{ComplexF64, 1}, n_qubits::Int)
+        target = gate._target
+        target = n_qubits - target
+        factor = exp(0.25im * pi)
+        _diaggate(qubits, n_qubits, target, factor)
+        #return qubits
     end
 
     """
     RX gate
     """
-    function apply!(gate::RX, qubits::Array{Complex, 1}, n_qubits::Int)
+    function apply!(gate::RX, qubits::Array{ComplexF64, 1}, n_qubits::Int)
         target = gate._target
         target = n_qubits - target
         ang = gate._theta * 0.5
@@ -81,13 +112,13 @@ module StateVectorFunctions
             qubits[i0] = _cos * t + nisin * u
             qubits[i0 + (1 << target)] = nisin * t + _cos * u
         end
-        return qubits
+        #return qubits
     end
 
     """
     RZ gate
     """
-    function apply!(gate::RZ, qubits::Array{Complex, 1}, n_qubits::Int)
+    function apply!(gate::RZ, qubits::Array{ComplexF64, 1}, n_qubits::Int)
         target = n_qubits - gate._target
         ang = gate._theta * 0.5
         eit = exp(1im * ang)
@@ -100,10 +131,13 @@ module StateVectorFunctions
             qubits[i0] *= eitstar
             qubits[i0 + (1 << target)] *= eit
         end
-        return qubits
+        #return qubits
     end
 
-    function apply!(gate::RY, qubits::Array{Complex, 1}, n_qubits::Int)
+    """
+    RY gate
+    """
+    function apply!(gate::RY, qubits::Array{ComplexF64, 1}, n_qubits::Int)
         target = n_qubits - gate._target
         ang = gate._theta * 0.5
         angpi = ang / pi
@@ -117,10 +151,13 @@ module StateVectorFunctions
             qubits[i0] = _cos * t - _sin * u
             qubits[i0 + (1 << target)] = _sin * t + _cos * u
         end
-        return qubits
+        #return qubits
     end
 
-    function apply!(gate::U3, qubits::Array{Complex, 1}, n_qubits::Int)
+    """
+    U3 gate
+    """
+    function apply!(gate::U3, qubits::Array{ComplexF64, 1}, n_qubits::Int)
         target = n_qubits - gate._target
         theta = gate._theta * 0.5
         thetapi = theta / pi
@@ -142,10 +179,13 @@ module StateVectorFunctions
             qubits[i0] = a * t + b * u
             qubits[i0 + (1 << target)] = c * t + d * u
         end
-        return qubits
+        #return qubits
     end
     
-    function apply!(gate::CX, qubits::Array{Complex, 1}, n_qubits::Int)
+    """
+    CX gate
+    """
+    function apply!(gate::CX, qubits::Array{ComplexF64, 1}, n_qubits::Int)
         control = n_qubits - gate._control
         target = n_qubits - gate._target
         c_mask = 0
@@ -162,10 +202,13 @@ module StateVectorFunctions
             qubits[i10] = qubits[i11]
             qubits[i11] = t
         end
-        return qubits
+        #return qubits
     end
 
-    function apply!(gate::CZ, qubits::Array{Complex, 1}, n_qubits::Int)
+    """
+    CZ gate
+    """
+    function apply!(gate::CZ, qubits::Array{ComplexF64, 1}, n_qubits::Int)
         control = n_qubits - gate._control
         target = n_qubits - gate._target
         all1 = 0
@@ -178,10 +221,13 @@ module StateVectorFunctions
             i11 = _mult_shifted(masks, i-1) | all1
             qubits[i11 + 1] *= -1
         end
-        return qubits
+        #return qubits
     end
 
-    function apply!(gate::CRX, qubits::Array{Complex, 1}, n_qubits::Int)
+    """
+    CRX gate
+    """
+    function apply!(gate::CRX, qubits::Array{ComplexF64, 1}, n_qubits::Int)
         control = n_qubits - gate._control
         target = n_qubits - gate._target
         ang = gate._theta * 0.5
@@ -203,10 +249,13 @@ module StateVectorFunctions
             qubits[i10] = _cos * t + nisin * u
             qubits[i11] = nisin * t + _cos * u
         end
-        return qubits
+        #return qubits
     end
 
-    function apply!(gate::CRY, qubits::Array{Complex, 1}, n_qubits::Int)
+    """
+    CRY gate
+    """
+    function apply!(gate::CRY, qubits::Array{ComplexF64, 1}, n_qubits::Int)
         control = n_qubits - gate._control
         target = n_qubits - gate._target
         ang = gate._theta * 0.5
@@ -228,10 +277,13 @@ module StateVectorFunctions
             qubits[i10] = _cos * t - _sin * u
             qubits[i11] = _sin * t + _cos * u
         end
-        return qubits
+        #return qubits
     end
 
-    function apply!(gate::CRZ, qubits::Array{Complex, 1}, n_qubits::Int)
+    """
+    CRZ gate
+    """
+    function apply!(gate::CRZ, qubits::Array{ComplexF64, 1}, n_qubits::Int)
         control = n_qubits - gate._control
         target = n_qubits - gate._target
         ang = gate._theta * 0.5
@@ -250,10 +302,13 @@ module StateVectorFunctions
             qubits[i10] *= eitstar
             qubits[i11] *= eit
         end
-        return qubits
+        #return qubits
     end
 
-    function apply!(gate::CP, qubits::Array{Complex, 1}, n_qubits::Int)
+    """
+    CP gate
+    """
+    function apply!(gate::CP, qubits::Array{ComplexF64, 1}, n_qubits::Int)
         control = n_qubits - gate._control
         target = n_qubits - gate._target
         eit = exp(1.0im * gate._theta)
@@ -266,10 +321,10 @@ module StateVectorFunctions
             i11 = _mult_shifted(masks, i-1) | c_mask | t_mask + 1
             qubits[i11] *= eit
         end
-        return qubits
+        #return qubits
     end
 
-    function _create_masks(indices)
+    function _create_masks(indices::Array{Int, 1})
         sort!(indices)
         masks = zeros(Int, length(indices) + 1)
         for (i, x) in enumerate(indices)
@@ -282,14 +337,14 @@ module StateVectorFunctions
         return masks
     end
 
-    function _shifted(lower_mask, idx)
+    function _shifted(lower_mask::Int, idx::Int)
         idx = idx - 1
         lower = idx & lower_mask
         higher = (idx & ~lower_mask) << 1
         return higher + lower + 1
     end
     
-    function _mult_shifted(masks, idx)
+    function _mult_shifted(masks::Array{Int, 1}, idx::Int)
         shifted = 0
         for (i, x) in enumerate(masks)
             shifted |= (idx & x) << (i-1)

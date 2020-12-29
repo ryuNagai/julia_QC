@@ -5,14 +5,14 @@ module UndirectedGraphFunctions
     export create_buckets, contract_graph, gate_parser
 
     mutable struct StateTensor
-        item::Array{Complex, 1}
+        item::Array{ComplexF64, 1}
         target::Int
         worldline1::Int
     end
     
     struct Tensor
         indices::Array{Int, 1}
-        item::Array{Complex}
+        item::Array{ComplexF64}
     end
 
     function create_buckets(_n_qregs::Int, gates::Array{UG_Gate,1}, input_state::Array{Int,1}, output_state::Array{Int,1})
@@ -40,10 +40,10 @@ module UndirectedGraphFunctions
         end
 
         for qreg in 1:_n_qregs
-            input_val = convert(Array{Complex, 1}, [1 - input_state[qreg], input_state[qreg]])
+            input_val = convert(Array{ComplexF64, 1}, [1 - input_state[qreg], input_state[qreg]])
             _input_state = StateTensor(input_val, qreg, 1 + sum(worldlines[1:(qreg-1)]))
             insert!(elements, qreg, _input_state)
-            output_val = convert(Array{Complex, 1}, [1 - output_state[qreg], output_state[qreg]])
+            output_val = convert(Array{ComplexF64, 1}, [1 - output_state[qreg], output_state[qreg]])
             _output_state = StateTensor(output_val, qreg, sum(worldlines[1:qreg]))
             push!(elements, _output_state)
         end

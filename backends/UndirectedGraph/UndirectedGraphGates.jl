@@ -8,14 +8,14 @@ module UndirectedGraphGates
     abstract type UG_TwoQubitGate <: UG_Gate end
 
     mutable struct OneQubitGateTensor <: UndirectedGraphTensor
-        item::Array{Complex, 2}
+        item::Array{ComplexF64, 2}
         target::Int
         worldline1::Int
         worldline2::Int
     end
 
     mutable struct TwoQubitGateTensor <: UndirectedGraphTensor
-        item::Array{Complex, 2}
+        item::Array{ComplexF64, 2}
         control::Int
         target::Int
         worldline1::Int
