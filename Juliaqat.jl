@@ -90,13 +90,13 @@ module Juliaqat
         return circuit
     end
 
-    function execute(circuit::QuantumCircuit, device::T) where T <: Device
-        result = execute_backend(circuit._n_qreg::Int, circuit._gates::Array{Gate,1}, device)
+    function execute(circuit::QuantumCircuit, device::T, args...) where T <: Device
+        result = execute_backend(circuit._n_qreg::Int, circuit._gates::Array{Gate,1}, device, args)
         return result
     end
 
-    function execute(circuit::Input, device::T) where T <: Device
-        result = execute_backend(circuit._n_qreg::Int, circuit._gates::Array{Gate,1}, device)
+    function execute(circuit::Input, device::T, args...) where T <: Device
+        result = execute_backend(circuit._n_qreg::Int, circuit._gates::Array{Gate,1}, device, args)
         return result
     end
 

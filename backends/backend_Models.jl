@@ -1,8 +1,11 @@
 module BackendModels
 
-    export UndirectedGraphModel, StateVectorModel, Device
+    export Device, Results
+    export UndirectedGraphModel, StateVectorModel
+    export StateVectorResults
 
     abstract type Device end
+    abstract type Results end
 
     struct UndirectedGraphModel <: Device
         measure_all::Bool
@@ -33,5 +36,10 @@ module BackendModels
         else
             return StateVectorModel(false, init_state)
         end
+    end
+
+    struct StateVectorResults <: Results
+        states::Array{Any, 1}
+        cregs::Array{Any, 1}
     end
 end

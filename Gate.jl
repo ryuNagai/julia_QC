@@ -165,6 +165,21 @@ module GateSet
         return CRZ(_control, _target, _theta, "CRZ")
     end
 
+    struct M <: OneQubitGate
+        _target::Int64
+        _cregidx::Int64
+        _result::Int64
+        _name::String
+    end
+
+    function M(_target::Int64, _cregidx::Int64=0)
+        if _cregidx == 0 # creg index is not specified
+            return M(_target, _target, 0, "M")
+        else
+            return M(_target, _cregidx, 0, "M")
+        end
+    end
+
     # export all OneQubit Gate and TwoQubitGate
     for n in names(@__MODULE__; all=true)
         if Base.isidentifier(n) && n ∉ (Symbol(@__MODULE__), :eval, :include)

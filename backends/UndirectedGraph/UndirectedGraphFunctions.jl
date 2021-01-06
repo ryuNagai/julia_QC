@@ -160,11 +160,11 @@ module UndirectedGraphFunctions
     end
 
     function gate_mat(gate::S)
-        return [1 0; 0 exp(im*pi/2)]
+        return [1 0; 0 _exp(im*pi/2)]
     end
 
     function gate_mat(gate::T)
-        return [1 0; 0 exp(im*pi/4)]
+        return [1 0; 0 _exp(im*pi/4)]
     end
 
     function gate_mat(gate::CZ)
@@ -185,7 +185,7 @@ module UndirectedGraphFunctions
 
     function gate_mat(gate::RZ)
         theta = gate._theta
-        return [exp(-im*theta/2) 0; 0 exp(im*theta/2)]
+        return [_exp(-im*theta/2) 0; 0 _exp(im*theta/2)]
     end
 
     function gate_parser(gate::CX)
@@ -198,6 +198,12 @@ module UndirectedGraphFunctions
 
     function gate_parser(gate::T) where T <: UG_Gate
         return [gate]
+    end
+
+    function _exp(theta::Float64)
+        thetapi = theta / pi / im
+        res = cospi(thetapi) + im * sinpi(thetapi)
+        return res
     end
 
 end

@@ -6,7 +6,7 @@ module StateVectorBackend
     using .StateVectorFunctions
     using .BackendModels
 
-    function execute_backend(n_qregs::Int, gates, model)
+    function execute_backend(n_qregs::Int, gates, model, counts::Int64)
         if model.zero_state == true
             state = zeros(ComplexF64, 2^n_qregs)
             state[1] = 1.
@@ -17,11 +17,35 @@ module StateVectorBackend
                 state = model.init_state
             end
         end
+
         backend_gates = call_backend_gates(gates)
-        for gate in backend_gates
-            apply!(gate, state, n_qregs)
+        states = []
+        cregs = []
+        for i in 1:counts
+            _backend_gates = copy(backend_gates)
+            _state = copy(state)
+            creg_indices = []
+            results = []
+            for gate in _backend_gates
+                apply!(gate, _state, n_qregs)
+                if typeof(gate) == M
+                    push!(creg_indices, gate._cregidx)
+                    push!(results, gate._result)
+                end
+            end
+
+            if length(creg_indices) > 0
+                creg = zeros(Int64, max(creg_indices...))
+                for (i, idx) in enumerate(creg_indices)
+                    creg[idx] = results[i]
+                end
+            else
+                creg = zeros(Int64, n_qregs)
+            end
+            push!(states, _state)
+            push!(cregs, creg)
         end
-        return state
+        return states, cregs
     end
 
     function call_backend_gates(gates)

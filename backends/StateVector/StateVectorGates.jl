@@ -85,6 +85,12 @@ module StateVectorGates
         _theta::Float64
     end
 
+    mutable struct M <: SV_OneQubitGate
+        _target::Int64
+        _cregidx::Int64
+        _result::Int64
+    end
+
     # export all SV_Gate and TwoQubitGate
     for n in names(@__MODULE__; all=true)
         if Base.isidentifier(n) && n ∉ (Symbol(@__MODULE__), :eval, :include)
